@@ -90,20 +90,21 @@ def find_word_chain(original_list_of_words, search_method):
         stack = [initial_word,]
         return solve_geograpgy_problem_using_dfs(initial_word, stack, recursion_depth, steps)
 
-# Example list_of_words to form a word chain
-list_of_words = ["ABC", "CDE", "CFG", "EHE", "EIJ", "GHK", "GLC"]
-list_of_words = ["apple", "lion", "nut", "elephant", "tiger", 'redpoll', 'apple']
+if __name__ == '__main__':
+    # Example list_of_words to form a word chain
+    list_of_words = ["ABC", "CDE", "CFG", "EHE", "EIJ", "GHK", "GLC"]
+    # list_of_words = ["apple", "lion", "nut", "elephant", "tiger", 'redpoll', 'apple']
 
-while True:
-    search_method = input("Choose BFS or DFS (Enter 'BFS' or 'DFS'): ").strip().upper()
-    if search_method in ['BFS', 'DFS']:
-        break
+    while True:
+        search_method = input("Choose BFS or DFS (Enter 'BFS' or 'DFS'): ").strip().upper()
+        if search_method in ['BFS', 'DFS']:
+            break
 
-# Find and print the word sequence
-sequence_of_chain_words = find_word_chain(list_of_words, search_method)
+    # Find and print the word sequence
+    sequence_of_chain_words = find_word_chain(list_of_words, search_method)
 
-if sequence_of_chain_words:
-    sequence_of_chain_words = ' -> '.join(sequence_of_chain_words)
-    print(sequence_of_chain_words)
-else:
-    print("No valid word sequence found.")
+    if sequence_of_chain_words:
+        sequence_of_chain_words = ' -> '.join(sequence_of_chain_words)
+        print(sequence_of_chain_words)
+    else:
+        print("No valid word sequence found.")

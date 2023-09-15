@@ -26,11 +26,45 @@ Now, let's discuss the output and the order in which nodes (states) are visited 
 This order depends on the specifics of the search algorithm (in this case, depth-first search). 
 
 ```python
-def find_word_chain(original_list_of_words):
+from collections import deque
+
+def find_word_chain(original_list_of_words, search_method):
+    
+    def solve_geograpgy_problem_using_bfs(queue, recursion_depth, steps):
+        while queue:
+            current_word, current_sequence = queue.popleft()
+            
+            if len(current_sequence) == len(original_list_of_words):
+                return current_sequence
+            
+            recursion_depth += 1
+            
+            last_letter = current_word[-1]
+            match_list = graph_of_first_letter.get(last_letter)
+            
+            # If there are no words starting with the last letter, return None
+            if match_list is None:
+                return None
+            
+            for word in match_list:
+                steps += 1
+                # Print the state (word) as it is visited
+                print("Recursion depth: {depth}, steps: {steps} and visiting {word}".format(
+                    depth=recursion_depth,
+                    steps=steps,
+                    word=word,
+                ))
+                    
+                if word not in current_sequence:
+                    new_sequence = current_sequence + [word]
+                    queue.append((word, new_sequence))
+        
+        return None  # No valid sequence found
+
     # Depth-first search function to find a word chain
-    def solve_geograpgy_problem_using_dfs(word, recursion_depth, steps):
-        if len(word_chain) == len(original_list_of_words):
-            return word_chain
+    def solve_geograpgy_problem_using_dfs(word, stack, recursion_depth, steps):
+        if len(stack) == len(original_list_of_words):
+            return stack
 
         last_letter = word[-1]
         match_list = graph_of_first_letter.get(last_letter)
@@ -40,11 +74,9 @@ def find_word_chain(original_list_of_words):
         
         recursion_depth += 1
         
-        
         for next_word in match_list:
-            if next_word not in used_words:
-                word_chain.append(next_word)
-                used_words.add(next_word)
+            if next_word not in stack:
+                stack.append(next_word)
                 
                 steps += 1
                 # Print the state (word) as it is visited
@@ -55,13 +87,18 @@ def find_word_chain(original_list_of_words):
                 ))
                 
                 # Recursively search for the next word in the chain
-                result = solve_geograpgy_problem_using_dfs(next_word, recursion_depth, steps)
+                result = solve_geograpgy_problem_using_dfs(next_word, stack, recursion_depth, steps)
                 if result:
                     return result
                 
                 # Backtrack by removing the current word
-                word_chain.pop()
-                used_words.remove(next_word)
+                stack.pop()
+    
+    initial_word = original_list_of_words[0]
+    
+    original_list_of_words = set(original_list_of_words)
+    if len(original_list_of_words) == 1:
+        return initial_word
     
     # Create a graph_of_first_letter where each word is a node with outgoing edges to words that start with its last letter
     graph_of_first_letter = {}
@@ -70,51 +107,60 @@ def find_word_chain(original_list_of_words):
             graph_of_first_letter[word[0]] = []
         graph_of_first_letter[word[0]].append(word)
         
-    initial_word = original_list_of_words[0]
-    used_words = set([initial_word])
-    word_chain = [initial_word]
-    
     recursion_depth = 0
     steps = 0
     
-    return solve_geograpgy_problem_using_dfs(initial_word, recursion_depth, steps)
+    if search_method == 'BFS':
+        queue = deque([(initial_word, [initial_word,])])
+        return solve_geograpgy_problem_using_bfs(queue, recursion_depth, steps)
+        
+    elif search_method == 'DFS':
+        stack = [initial_word,]
+        return solve_geograpgy_problem_using_dfs(initial_word, stack, recursion_depth, steps)
 
-# Example list_of_words to form a word chain
-list_of_words = ["ABC", "CDE", "CFG", "EHE", "EIJ", "GHK", "GLC"]
-# list_of_words = ["apple", "lion", "nut", "elephant", "tiger", 'redpoll']
+if __name__ == '__main__':
+    # Example list_of_words to form a word chain
+    list_of_words = ["ABC", "CDE", "CFG", "EHE", "EIJ", "GHK", "GLC"]
+    # list_of_words = ["apple", "lion", "nut", "elephant", "tiger", 'redpoll', 'apple']
 
-# Find and print the word sequence
-sequence_of_chain_words = find_word_chain(list_of_words)
+    while True:
+        search_method = input("Choose BFS or DFS (Enter 'BFS' or 'DFS'): ").strip().upper()
+        if search_method in ['BFS', 'DFS']:
+            break
 
-if sequence_of_chain_words:
-    sequence_of_chain_words = ' -> '.join(sequence_of_chain_words)
-    print(sequence_of_chain_words)
-else:
-    print("No valid word sequence found.")
+    # Find and print the word sequence
+    sequence_of_chain_words = find_word_chain(list_of_words, search_method)
+
+    if sequence_of_chain_words:
+        sequence_of_chain_words = ' -> '.join(sequence_of_chain_words)
+        print(sequence_of_chain_words)
+    else:
+        print("No valid word sequence found.")
 ```
 
 ## Explanation of code
 Here's explaination of the code for finding a word chain from a list of words using depth-first search (DFS):
 
 Explanation:
+This code aims to find a word chain from a list of words using either Breadth-First Search (BFS) or Depth-First Search (DFS) based on the user's choice. Let's break down the code step by step:
 
-1. `solve_geography_problem_using_dfs` is a depth-first search (DFS) function used to find a word chain.
-   - It takes the current `word`, `recursion_depth`, and `steps` as input.
-   - It checks if the length of the `word_chain` is equal to the length of `original_list_of_words`. If they match, a valid word sequence is found, and it returns the `word_chain`.
-   - It identifies the `last_letter` of the current word and looks for words in `match_list` that start with this last letter. If none are found, it returns None.
-   - It iterates through words in `match_list` and recursively explores them, adding them to the `word_chain` and marking them as used.
-   - It prints the recursion depth and steps taken as it visits words.
-   - If a valid sequence is found during recursion, it returns the result. Otherwise, it backtracks by removing the last added word from the `word_chain`.
+1. The `find_word_chain` function is defined, which takes two arguments: `original_list_of_words` (the list of words to form a word chain from) and `search_method` (the search method to use: 'BFS' or 'DFS').
 
-2. The `graph_of_first_letter` dictionary is created to represent the graph of words where each word is a node, and there are edges from words ending with the same letter to others.
+2. Inside the `find_word_chain` function, there are two sub-functions:
 
-3. The initial state is set to the first word in the list, and it's marked as used in the `used_words` set.
+   - `solve_geograpgy_problem_using_bfs`: This function uses BFS to find a word chain. It starts with an initial word, builds a graph of words based on the last letter of each word, and explores the graph using a queue. The goal is to find a sequence of words that can form a valid word chain.
 
-4. The code initiates the search by calling `solve_geography_problem_using_dfs` with the initial state.
+   - `solve_geograpgy_problem_using_dfs`: This function uses DFS to find a word chain. It recursively explores paths, starting from an initial word and backtracking when needed. Like the BFS version, it aims to find a sequence of words that can form a valid word chain.
 
-5. Finally, the code prints the resulting word sequence if found, or indicates that no valid sequence was found.
+3. The code prepares the initial word and a graph (`graph_of_first_letter`) that maps the last letter of each word to a list of words starting with that letter.
 
-This code uses DFS to systematically explore possible word sequences and backtracks when needed to find a valid word chain. The recursion depth and steps are printed for each visited word to track the progress of the search.
+4. Depending on the `search_method` chosen by the user (BFS or DFS), the code calls the respective search function to find the word chain.
+
+5. The word chain, if found, is returned as a list of words.
+
+6. Finally, the code prompts the user to choose between BFS and DFS and then prints the resulting word chain if one is found.
+
+Note: The example word list `list_of_words` provided in the code is used for testing. You can replace it with your own list of words to find a word chain from.
 
 ## Output:
 Output from the Program:
@@ -122,6 +168,15 @@ Output from the Program:
 ```python
 list_of_words = ["apple", "lion", "nut", "elephant", "tiger", 'redpoll']
 
+Choose BFS or DFS (Enter 'BFS' or 'DFS'): bfs
+Recursion depth: 1, steps: 1 and visiting elephant
+Recursion depth: 2, steps: 2 and visiting tiger
+Recursion depth: 3, steps: 3 and visiting redpoll
+Recursion depth: 4, steps: 4 and visiting lion
+Recursion depth: 5, steps: 5 and visiting nut
+apple -> elephant -> tiger -> redpoll -> lion -> nut
+
+Choose BFS or DFS (Enter 'BFS' or 'DFS'): dfs
 Recursion depth: 1, steps: 1 and visiting elephant
 Recursion depth: 2, steps: 2 and visiting tiger
 Recursion depth: 3, steps: 3 and visiting redpoll
@@ -133,17 +188,29 @@ apple -> elephant -> tiger -> redpoll -> lion -> nut
 ```python
 list_of_words = ["ABC", "CDE", "CFG", "EHE", "EIJ", "GHK", "GLC"]
 
+Choose BFS or DFS (Enter 'BFS' or 'DFS'): bfs
 Recursion depth: 1, steps: 1 and visiting CDE
-Recursion depth: 2, steps: 2 and visiting EHE
-Recursion depth: 3, steps: 3 and visiting EIJ
-Recursion depth: 2, steps: 3 and visiting EIJ
 Recursion depth: 1, steps: 2 and visiting CFG
-Recursion depth: 2, steps: 3 and visiting GHK
-Recursion depth: 2, steps: 4 and visiting GLC
-Recursion depth: 3, steps: 5 and visiting CDE
+Recursion depth: 2, steps: 3 and visiting EHE
+Recursion depth: 2, steps: 4 and visiting EIJ
+Recursion depth: 3, steps: 5 and visiting GLC
+Recursion depth: 3, steps: 6 and visiting GHK
+Recursion depth: 4, steps: 7 and visiting EHE
+Recursion depth: 4, steps: 8 and visiting EIJ
+No valid word sequence found.
+
+Choose BFS or DFS (Enter 'BFS' or 'DFS'): dfs
+Recursion depth: 1, steps: 1 and visiting CDE
+Recursion depth: 2, steps: 2 and visiting EIJ
+Recursion depth: 2, steps: 3 and visiting EHE
+Recursion depth: 3, steps: 4 and visiting EIJ
+Recursion depth: 1, steps: 2 and visiting CFG
+Recursion depth: 2, steps: 3 and visiting GLC
+Recursion depth: 3, steps: 4 and visiting CDE
+Recursion depth: 4, steps: 5 and visiting EIJ
 Recursion depth: 4, steps: 6 and visiting EHE
 Recursion depth: 5, steps: 7 and visiting EIJ
-Recursion depth: 4, steps: 7 and visiting EIJ
+Recursion depth: 2, steps: 4 and visiting GHK
 No valid word sequence found.
 ```
 
