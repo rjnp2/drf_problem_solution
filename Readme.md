@@ -242,20 +242,60 @@ Now, let's discuss the output and the order in which nodes (states) are visited 
 This order depends on the specifics of the search algorithm (in this case, depth-first search). 
 
 ```python
-def match_top_bottom_domino(dominos):
+from collections import deque
+
+def match_top_bottom_domino(dominos, search_method):
     
+    def solve_pcp_problem_using_bfs(queue, recursion_depth, steps):
+        # print(queue)
+        while queue:
+            current_path = queue.popleft()
+            recursion_depth += 1
+            
+            for path in current_path:
+                for domino in dominos:
+                    steps += 1
+                    
+                    print("Recursion depth: {depth}, steps: {steps} and visting: {paths}".format(
+                        depth=recursion_depth,
+                        paths=domino,
+                        steps=steps
+                    ))
+                    
+                    new_path = path.copy()
+                    new_path.append(domino)
+                    
+                    top_domino = "".join([d[0] for d in new_path])
+                    bottom_domino = "".join([d[1] for d in new_path])
+                    
+                    # Check if top and bottom are equal
+                    if top_domino == bottom_domino:
+                        return [top_domino, bottom_domino]
+
+                    # Check for partial match and add to new_possible_paths
+                    min_len = min(len(top_domino), len(bottom_domino))
+                    if top_domino[:min_len] == bottom_domino[:min_len]:
+                        queue.append([new_path,])
+        
     def solve_pcp_problem_using_dfs(all_possible_paths, recursion_depth, steps):
         # Base case: If there are no more paths to explore, return None
         if not all_possible_paths:
             return None
         
         new_possible_paths = []
+        recursion_depth += 1
         for path in all_possible_paths:
             for domino in dominos:
                 new_path = path.copy()
                 new_path.append(domino)
                 
                 steps += 1
+                
+                print("Recursion depth: {depth}, steps: {steps} and visting: {paths}".format(
+                    depth=recursion_depth,
+                    paths=domino,
+                    steps=steps
+                ))
                 
                 # Concatenate top and bottom of the dominoes in the path
                 top_domino = "".join([d[0] for d in new_path])
@@ -269,15 +309,12 @@ def match_top_bottom_domino(dominos):
                 min_len = min(len(top_domino), len(bottom_domino))
                 if top_domino[:min_len] == bottom_domino[:min_len]:
                     new_possible_paths.append(new_path)
-                    
-        recursion_depth += 1
-        print("Recursion depth: {depth}, paths: {paths}, steps: {steps}".format(
-            depth=recursion_depth,
-            paths=len(all_possible_paths),
-            steps=steps
-        ))
+        
         # Continue the search with new_possible_paths
         return solve_pcp_problem_using_dfs(new_possible_paths, recursion_depth, steps)
+    
+    if len(dominos) == 1:
+        return None 
     
     recursion_depth = 0
     steps = 0
@@ -291,77 +328,73 @@ def match_top_bottom_domino(dominos):
         if top_domino[:min_len] == bottom_domino[:min_len]:
             all_possible_paths.append([domino,])
     
-    # Start solving the PCP problem using depth-first search
-    solution = solve_pcp_problem_using_dfs(all_possible_paths, recursion_depth, steps)
-    
-    return solution
+    if search_method == 'BFS':
+        queue = deque([all_possible_paths, ])
+        return solve_pcp_problem_using_bfs(queue, recursion_depth, steps)
+        
+    elif search_method == 'DFS':
+        return solve_pcp_problem_using_dfs(all_possible_paths, recursion_depth, steps)
 
-# Example dominoes
-dominoes = [
-    ("bba", "b"),
-    ("ba", "baa"),
-    ("ba", "aba"),
-    ("ab", "bba"),
-]
+if __name__ == '__name__':
+    # Example dominoes
+    dominoes = [
+        ("bba", "b"),
+        ("ba", "baa"),
+        ("ba", "aba"),
+        ("ab", "bba"),
+    ]
 
-# Find a solution for the PCP problem
-solution = match_top_bottom_domino(dominoes)
+    # dominoes = [
+    #     ("MOM", "M"),
+    #     ("O", "OMOMO"),
+    # ]
 
-if solution:
-    print(f"Solution found: {solution[0]} domino top is equal to {solution[1]} domino bottom with a size of {len(solution[0])} each.")
-else:
-    print("No solution found.")
+    # dominoes = [
+    #     ('AA', 'A')
+    # ]
+
+    while True:
+        search_method = input("Choose BFS or DFS (Enter 'BFS' or 'DFS'): ").strip().upper()
+        if search_method in ['BFS', 'DFS']:
+            break
+        
+    # Find a solution for the PCP problem
+    solution = match_top_bottom_domino(dominoes, search_method)
+
+    if solution:
+        print(f"Match found: {solution[0]} domino top is equal to {solution[1]} domino bottom with a size of {len(solution[0])} each.")
+    else:
+        print("No match found.")
 ```
 
 ## Explanation of code
 Here's an explanation of the provided Python code for solving the Post Correspondence Problem (PCP):
 
-1. `match_top_bottom_domino` Function:
-   - This is the main function that takes a list of dominoes as input and attempts to find a sequence of dominoes that match the top and bottom strings.
+1. The `match_top_bottom_domino` function takes two arguments: `dominos` (a list of dominos represented as pairs of strings) and `search_method` (the search method to use, either 'BFS' or 'DFS').
 
-2. `solve_pcp_problem_using_dfs` Function:
-   - This function is a recursive depth-first search (DFS) function that explores all possible sequences of dominoes to solve the PCP.
-   - It takes three parameters:
-     - `all_possible_paths`: A list of lists, where each inner list represents a sequence of dominoes to be explored.
-     - `recursion_depth`: An integer that keeps track of the depth of recursion.
-     - `steps`: An integer that counts the number of steps taken in the search.
+2. There are two sub-functions for solving the PCP problem:
 
-3. Base Case:
-   - If `all_possible_paths` is empty (i.e., no more paths to explore), the function returns `None`, indicating that no solution was found.
+   - `solve_pcp_problem_using_bfs`: This function uses BFS to find a solution. It starts with an empty queue containing an initial path and explores all possible paths, checking for matches at each step.
 
-4. Iterating Through Paths:
-   - The function iterates through each path in `all_possible_paths`.
-   - For each path, it tries to append each domino from the provided `dominos` list.
+   - `solve_pcp_problem_using_dfs`: This function uses DFS to find a solution. It recursively explores paths, adding dominos to the path and backtracking when necessary.
 
-5. Combining Dominoes:
-   - It concatenates the top and bottom strings of the dominoes in the path to form `top_domino` and `bottom_domino`.
+3. If the list of dominos contains only one domino, it's impossible to form a sequence that satisfies the PCP, so the function returns `None` in that case.
 
-6. Matching Conditions:
-   - It checks two conditions:
-     - If `top_domino` is equal to `bottom_domino`, it means a valid sequence is found, and it returns the matching strings.
-     - If there is a partial match (the first characters of `top_domino` and `bottom_domino` match), it adds the new path to `new_possible_paths` for further exploration.
+4. The code initializes `recursion_depth` and `steps` counters to keep track of the depth of recursion and the number of steps taken in the search process.
 
-7. Recursion Depth and Steps:
-   - The `recursion_depth` and `steps` variables are updated to keep track of the depth of recursion and the number of steps taken.
+5. The code then initializes `all_possible_paths` with dominos that have an initial partial match (i.e., the top and bottom have a common prefix). These paths serve as starting points for both BFS and DFS.
 
-8. Printing Progress:
-   - It prints information about the current recursion depth, the number of paths, and the number of steps taken during each recursive call.
+6. Depending on the `search_method` chosen by the user, the code either calls the BFS or DFS function to find a solution.
 
-9. Recursive Call:
-   - The function makes a recursive call with `new_possible_paths` to continue the search.
+7. After finding a solution, if one exists, it prints the matching top and bottom dominos along with their sizes.
 
-10. Initialization and Start:
-    - The `recursion_depth` and `steps` variables are initialized to 0.
-    - An initial set of `all_possible_paths` is created based on dominoes with initial partial matches.
+8. The code prompts the user to choose between BFS and DFS to determine the search method.
 
-11. Starting the Search:
-    - The PCP problem-solving process starts by calling `solve_pcp_problem_using_dfs` with the initial parameters.
+9. The example dominos are provided in the code for testing. You can modify the `dominos` list with your own set of dominos to find a solution for a specific PCP instance.
 
-12. Solution or No Solution:
-    - If a solution is found, it prints the matching strings and their size.
-    - If no solution is found, it indicates that no solution exists.
+10. The code uses the `if __name__ == '__main__':` block to ensure that it only executes the PCP solving logic when the script is run directly and not when it's imported as a module.
 
-Overall, this code implements a depth-first search to systematically explore all possible sequences of dominoes to solve the PCP problem. It reports progress along the way and returns a solution if one is found.
+Remember to replace the example dominos with your specific PCP instance to find a solution for your problem.
 
 ## Output of code:
 Output from the Program:
@@ -374,63 +407,59 @@ dominoes = [
     ("ab", "bba"),
 ]
 
-...
-Visiting: ('ab', 'bba')
-Visiting: ('bba', 'b')
-Visiting: ('ba', 'baa')
-Visiting: ('ba', 'aba')
-Visiting: ('ab', 'bba')
-Visiting: ('bba', 'b')
-Visiting: ('ba', 'baa')
-Visiting: ('ba', 'aba')
-Visiting: ('ab', 'bba')
-Visiting: ('bba', 'b')
-Visiting: ('ba', 'baa')
-Visiting: ('ba', 'aba')
-Visiting: ('ab', 'bba')
-Visiting: ('bba', 'b')
-Visiting: ('ba', 'baa')
-Visiting: ('ba', 'aba')
-Visiting: ('ab', 'bba')
-Visiting: ('bba', 'b')
-Visiting: ('ba', 'baa')
-Visiting: ('ba', 'aba')
-Recursion depth: 1, paths: 2, steps: 8
-...
-Visiting: ('ab', 'bba')
-Visiting: ('bba', 'b')
-Visiting: ('ba', 'baa')
-Visiting: ('ba', 'aba')
-Visiting: ('ab', 'bba')
-Visiting: ('bba', 'b')
-Visiting: ('ba', 'baa')
-Visiting: ('ba', 'aba')
-Visiting: ('ab', 'bba')
-Visiting: ('bba', 'b')
-Visiting: ('ba', 'baa')
-Visiting: ('ba', 'aba')
-Visiting: ('ab', 'bba')
-Visiting: ('bba', 'b')
-Visiting: ('ba', 'baa')
-Visiting: ('ba', 'aba')
-Visiting: ('ab', 'bba')
-Visiting: ('bba', 'b')
-Visiting: ('ba', 'baa')
-Visiting: ('ba', 'aba')
-Recursion depth: 64, paths: 6394, steps: 237572
-...
-Visiting: ('ba', 'baa')
-Visiting: ('ba', 'aba')
-Visiting: ('ab', 'bba')
-Visiting: ('bba', 'b')
-Visiting: ('ba', 'baa')
-Visiting: ('ba', 'aba')
-Visiting: ('ab', 'bba')
-Visiting: ('bba', 'b')
-Visiting: ('ba', 'baa')
-Visiting: ('ba', 'aba')
+Choose BFS or DFS (Enter 'BFS' or 'DFS'): bfs
+Recursion depth: 69355, steps: 277421 and visting: ('bba', 'b')
+Recursion depth: 69355, steps: 277422 and visting: ('ba', 'baa')
+Recursion depth: 69355, steps: 277423 and visting: ('ba', 'aba')
+Recursion depth: 69355, steps: 277424 and visting: ('ab', 'bba')
+Recursion depth: 69356, steps: 277425 and visting: ('bba', 'b')
+Recursion depth: 69356, steps: 277426 and visting: ('ba', 'baa')
+Recursion depth: 69356, steps: 277427 and visting: ('ba', 'aba')
+Recursion depth: 69356, steps: 277428 and visting: ('ab', 'bba')
+Recursion depth: 69357, steps: 277429 and visting: ('bba', 'b')
+Recursion depth: 69357, steps: 277430 and visting: ('ba', 'baa')
+Recursion depth: 69357, steps: 277431 and visting: ('ba', 'aba')
+Recursion depth: 69357, steps: 277432 and visting: ('ab', 'bba')
+Recursion depth: 69358, steps: 277433 and visting: ('bba', 'b')
+Recursion depth: 69358, steps: 277434 and visting: ('ba', 'baa')
+Recursion depth: 69358, steps: 277435 and visting: ('ba', 'aba')
+Recursion depth: 69358, steps: 277436 and visting: ('ab', 'bba')
+Recursion depth: 69359, steps: 277437 and visting: ('bba', 'b')
+Recursion depth: 69359, steps: 277438 and visting: ('ba', 'baa')
+Recursion depth: 69359, steps: 277439 and visting: ('ba', 'aba')
+Match found: baabbaababbabbabaabbaabbaababbaababbabbaababbabbabaabbbabbabaabababbabbababbabbabbabaabbaabbbababbaababbabbaabbbabbabaabbbabbababbabbababbababbaabbbabbaba domino top is equal to baabbaababbabbabaabbaabbaababbaababbabbaababbabbabaabbbabbabaabababbabbababbabbabbabaabbaabbbababbaababbabbaabbbabbabaabbbabbababbabbababbababbaabbbabbaba domino bottom with a size of 154 each.
 
-Solution found: baabbaababbabbabaabbaabbaababbaababbabbaababbabbabaabbbabbabaabababbabbababbabbabbabaabbaabbbababbaababbabbaabbbabbabaabbbabbababbabbababbababbaabbbabbaba domino top is equal to baabbaababbabbabaabbaabbaababbaababbabbaababbabbabaabbbabbabaabababbabbababbabbabbabaabbaabbbababbaababbabbaabbbabbabaabbbabbababbabbababbababbaabbbabbaba domino bottom with a size of 154 each.
+Choose BFS or DFS (Enter 'BFS' or 'DFS'): dfs
+Recursion depth: 65, steps: 277420 and visting: ('ab', 'bba')
+Recursion depth: 65, steps: 277421 and visting: ('bba', 'b')
+Recursion depth: 65, steps: 277422 and visting: ('ba', 'baa')
+Recursion depth: 65, steps: 277423 and visting: ('ba', 'aba')
+Recursion depth: 65, steps: 277424 and visting: ('ab', 'bba')
+Recursion depth: 65, steps: 277425 and visting: ('bba', 'b')
+Recursion depth: 65, steps: 277426 and visting: ('ba', 'baa')
+Recursion depth: 65, steps: 277427 and visting: ('ba', 'aba')
+Recursion depth: 65, steps: 277428 and visting: ('ab', 'bba')
+Recursion depth: 65, steps: 277429 and visting: ('bba', 'b')
+Recursion depth: 65, steps: 277430 and visting: ('ba', 'baa')
+Recursion depth: 65, steps: 277431 and visting: ('ba', 'aba')
+Recursion depth: 65, steps: 277432 and visting: ('ab', 'bba')
+Recursion depth: 65, steps: 277433 and visting: ('bba', 'b')
+Recursion depth: 65, steps: 277434 and visting: ('ba', 'baa')
+Recursion depth: 65, steps: 277435 and visting: ('ba', 'aba')
+Recursion depth: 65, steps: 277436 and visting: ('ab', 'bba')
+Recursion depth: 65, steps: 277437 and visting: ('bba', 'b')
+Recursion depth: 65, steps: 277438 and visting: ('ba', 'baa')
+Recursion depth: 65, steps: 277439 and visting: ('ba', 'aba')
+Match found: baabbaababbabbabaabbaabbaababbaababbabbaababbabbabaabbbabbabaabababbabbababbabbabbabaabbaabbbababbaababbabbaabbbabbabaabbbabbababbabbababbababbaabbbabbaba domino top is equal to baabbaababbabbabaabbaabbaababbaababbabbaababbabbabaabbbabbabaabababbabbababbabbabbabaabbaabbbababbaababbabbaabbbabbabaabbbabbababbabbababbababbaabbbabbaba domino bottom with a size of 154 each.
+```
+
+```python
+dominoes = [
+    ('AA', 'A')
+]
+
+Choose BFS or DFS (Enter 'BFS' or 'DFS'): dfs
+No match found.
 ```
 
 ```python
@@ -439,12 +468,19 @@ dominoes = [
     ("O", "OMOMO"),
 ]
 
-Visiting: ('MOM', 'M')
-Visiting: ('O', 'OMOMO')
-Visiting: ('MOM', 'M')
-Visiting: ('O', 'OMOMO')
-Recursion depth: 1, paths: 2, steps: 4
-Visiting: ('MOM', 'M')
+Choose BFS or DFS (Enter 'BFS' or 'DFS'): bfs
+Recursion depth: 1, steps: 1 and visting: ('MOM', 'M')
+Recursion depth: 1, steps: 2 and visting: ('O', 'OMOMO')
+Recursion depth: 1, steps: 3 and visting: ('MOM', 'M')
+Recursion depth: 1, steps: 4 and visting: ('O', 'OMOMO')
+Recursion depth: 2, steps: 5 and visting: ('MOM', 'M')
+Match found: MOMOMOM domino top is equal to MOMOMOM domino bottom with a size of 7 each.
 
-Solution found: MOMOMOM domino top is equal to MOMOMOM domino bottom with a size of 7 each.
+Choose BFS or DFS (Enter 'BFS' or 'DFS'): dfs
+Recursion depth: 1, steps: 1 and visting: ('MOM', 'M')
+Recursion depth: 1, steps: 2 and visting: ('O', 'OMOMO')
+Recursion depth: 1, steps: 3 and visting: ('MOM', 'M')
+Recursion depth: 1, steps: 4 and visting: ('O', 'OMOMO')
+Recursion depth: 2, steps: 5 and visting: ('MOM', 'M')
+Match found: MOMOMOM domino top is equal to MOMOMOM domino bottom with a size of 7 each.
 ```

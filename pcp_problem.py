@@ -91,32 +91,33 @@ def match_top_bottom_domino(dominos, search_method):
     elif search_method == 'DFS':
         return solve_pcp_problem_using_dfs(all_possible_paths, recursion_depth, steps)
 
-# Example dominoes
-dominoes = [
-    ("bba", "b"),
-    ("ba", "baa"),
-    ("ba", "aba"),
-    ("ab", "bba"),
-]
+if __name__ == '__main__':
+    # Example dominoes
+    dominoes = [
+        ("bba", "b"),
+        ("ba", "baa"),
+        ("ba", "aba"),
+        ("ab", "bba"),
+    ]
 
-# dominoes = [
-#     ("MOM", "M"),
-#     ("O", "OMOMO"),
-# ]
+    dominoes = [
+        ("MOM", "M"),
+        ("O", "OMOMO"),
+    ]
 
-# dominoes = [
-#     ('AA', 'A')
-# ]
+    # dominoes = [
+    #     ('AA', 'A')
+    # ]
 
-while True:
-    search_method = input("Choose BFS or DFS (Enter 'BFS' or 'DFS'): ").strip().upper()
-    if search_method in ['BFS', 'DFS']:
-        break
-    
-# Find a solution for the PCP problem
-solution = match_top_bottom_domino(dominoes, search_method)
+    while True:
+        search_method = input("Choose BFS or DFS (Enter 'BFS' or 'DFS'): ").strip().upper()
+        if search_method in ['BFS', 'DFS']:
+            break
+        
+    # Find a solution for the PCP problem
+    solution = match_top_bottom_domino(dominoes, search_method)
 
-if solution:
-    print(f"Match found: {solution[0]} domino top is equal to {solution[1]} domino bottom with a size of {len(solution[0])} each.")
-else:
-    print("No match found.")
+    if solution:
+        print(f"Match found: {solution[0]} domino top is equal to {solution[1]} domino bottom with a size of {len(solution[0])} each.")
+    else:
+        print("No match found.")
