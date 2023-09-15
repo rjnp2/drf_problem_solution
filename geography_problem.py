@@ -67,7 +67,10 @@ def find_word_chain(original_list_of_words, search_method):
                 stack.pop()
     
     initial_word = original_list_of_words[0]
-    original_list_of_words = set(original_list_of_words[1:])
+    
+    original_list_of_words = set(original_list_of_words)
+    if len(original_list_of_words) == 1:
+        return initial_word
     
     # Create a graph_of_first_letter where each word is a node with outgoing edges to words that start with its last letter
     graph_of_first_letter = {}
