@@ -1,3 +1,5 @@
+from collections import deque
+
 def match_top_bottom_domino(dominos):
     
     def solve_pcp_problem_using_dfs(all_possible_paths, recursion_depth, steps):
@@ -56,6 +58,44 @@ def match_top_bottom_domino(dominos):
     
     return solution
 
+
+def match_top_bottom_domisno(dominos):
+    
+    all_possible_paths = []
+    for domino in dominos:
+        top_domino, bottom_domino = domino
+        min_len = min(len(top_domino), len(bottom_domino))
+        
+        if top_domino[:min_len] == bottom_domino[:min_len]:
+            all_possible_paths.append([domino,])
+    
+    # Initialize a queue for BFS
+    queue = deque([all_possible_paths, ])
+    
+    # print(queue)
+    while queue:
+        current_path = queue.popleft()
+        for path in current_path:
+            for domino in dominos:
+                
+                new_path = path.copy()
+                new_path.append(domino)
+                
+                top_domino = "".join([d[0] for d in new_path])
+                bottom_domino = "".join([d[1] for d in new_path])
+                
+                # Check if top and bottom are equal
+                if top_domino == bottom_domino:
+                    return [top_domino, bottom_domino]
+
+                # Check for partial match and add to new_possible_paths
+                min_len = min(len(top_domino), len(bottom_domino))
+                if top_domino[:min_len] == bottom_domino[:min_len]:
+                    new_path.append([domino,])
+                    queue.append([new_path,])
+    
+    return None
+
 # Example dominoes
 dominoes = [
     ("bba", "b"),
@@ -69,9 +109,9 @@ dominoes = [
 #     ("O", "OMOMO"),
 # ]
 
-dominoes = [
-    ('AA', 'A')
-]
+# dominoes = [
+#     ('AA', 'A')
+# ]
 # Find a solution for the PCP problem
 solution = match_top_bottom_domino(dominoes)
 
