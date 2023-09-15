@@ -34,9 +34,9 @@ def find_word_chain(original_list_of_words, search_method):
         return None  # No valid sequence found
 
     # Depth-first search function to find a word chain
-    def solve_geograpgy_problem_using_dfs(word, recursion_depth, steps):
-        if len(word_chain) == len(original_list_of_words):
-            return word_chain
+    def solve_geograpgy_problem_using_dfs(word, stack, recursion_depth, steps):
+        if len(stack) == len(original_list_of_words):
+            return stack
 
         last_letter = word[-1]
         match_list = graph_of_first_letter.get(last_letter)
@@ -47,9 +47,8 @@ def find_word_chain(original_list_of_words, search_method):
         recursion_depth += 1
         
         for next_word in match_list:
-            if next_word not in used_words:
-                word_chain.append(next_word)
-                used_words.add(next_word)
+            if next_word not in stack:
+                stack.append(next_word)
                 
                 steps += 1
                 # Print the state (word) as it is visited
@@ -60,13 +59,15 @@ def find_word_chain(original_list_of_words, search_method):
                 ))
                 
                 # Recursively search for the next word in the chain
-                result = solve_geograpgy_problem_using_dfs(next_word, recursion_depth, steps)
+                result = solve_geograpgy_problem_using_dfs(next_word, stack, recursion_depth, steps)
                 if result:
                     return result
                 
                 # Backtrack by removing the current word
-                word_chain.pop()
-                used_words.remove(next_word)
+                stack.pop()
+    
+    initial_word = original_list_of_words[0]
+    original_list_of_words = set(original_list_of_words[1:])
     
     # Create a graph_of_first_letter where each word is a node with outgoing edges to words that start with its last letter
     graph_of_first_letter = {}
@@ -75,22 +76,20 @@ def find_word_chain(original_list_of_words, search_method):
             graph_of_first_letter[word[0]] = []
         graph_of_first_letter[word[0]].append(word)
         
-    initial_word = original_list_of_words[0]
-    used_words = set([initial_word])
-    word_chain = [initial_word]
     recursion_depth = 0
     steps = 0
     
     if search_method == 'BFS':
-        queue = deque([(initial_word, word_chain)])
+        queue = deque([(initial_word, [initial_word,])])
         return solve_geograpgy_problem_using_bfs(queue, recursion_depth, steps)
         
     elif search_method == 'DFS':
-        return solve_geograpgy_problem_using_dfs(initial_word, recursion_depth, steps)
+        stack = [initial_word,]
+        return solve_geograpgy_problem_using_dfs(initial_word, stack, recursion_depth, steps)
 
 # Example list_of_words to form a word chain
 list_of_words = ["ABC", "CDE", "CFG", "EHE", "EIJ", "GHK", "GLC"]
-list_of_words = ["apple", "lion", "nut", "elephant", "tiger", 'redpoll']
+list_of_words = ["apple", "lion", "nut", "elephant", "tiger", 'redpoll', 'apple']
 
 while True:
     search_method = input("Choose BFS or DFS (Enter 'BFS' or 'DFS'): ").strip().upper()
