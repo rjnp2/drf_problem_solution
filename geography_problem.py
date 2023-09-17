@@ -100,10 +100,16 @@ if __name__ == '__main__':
         if search_method in ['BFS', 'DFS']:
             break
     
-    user_input_words = input("Please enter a list of words separated by commas, or press Enter to use the default value.").strip().upper()
+    print("Please enter a list of words separated by commas, or press Enter to use the default value.")
+    user_input_words = input("Value: ").strip().upper()
     if user_input_words:
-        user_input_words.replace('.', '')
-        list_of_words = [word.strip() for word in user_input_words.split(',')]
+        user_input_words = user_input_words.replace('.', '')
+        user_input_words = user_input_words.split(',')
+
+        if len(user_input_words) == 1:
+            raise ValueError('The input should contain more than one word separated by commas.') 
+        
+        list_of_words = [word.strip() for word in user_input_words]
 
     # Find and print the word sequence
     sequence_of_chain_words = find_word_chain(list_of_words, search_method)
