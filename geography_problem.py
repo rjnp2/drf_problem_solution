@@ -99,6 +99,11 @@ if __name__ == '__main__':
         search_method = input("Choose BFS or DFS (Enter 'BFS' or 'DFS'): ").strip().upper()
         if search_method in ['BFS', 'DFS']:
             break
+    
+    user_input_words = input("Please enter list of word in commas serparates or please enter to use default value: ").strip().upper()
+    if user_input_words:
+        user_input_words.replace('.', '')
+        list_of_words = [word.strip() for word in user_input_words.split(',')]
 
     # Find and print the word sequence
     sequence_of_chain_words = find_word_chain(list_of_words, search_method)
