@@ -100,7 +100,7 @@ if __name__ == '__main__':
         if search_method in ['BFS', 'DFS']:
             break
     
-    user_input_words = input("Please enter list of word in commas serparates or please enter to use default value: ").strip().upper()
+    user_input_words = input("Please enter a list of words separated by commas, or press Enter to use the default value.").strip().upper()
     if user_input_words:
         user_input_words.replace('.', '')
         list_of_words = [word.strip() for word in user_input_words.split(',')]
