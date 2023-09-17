@@ -127,6 +127,17 @@ if __name__ == '__main__':
         search_method = input("Choose BFS or DFS (Enter 'BFS' or 'DFS'): ").strip().upper()
         if search_method in ['BFS', 'DFS']:
             break
+    
+    print("Please enter a list of words separated by commas, or press Enter to use the default value.")
+    user_input_words = input("Value: ").strip().upper()
+    if user_input_words:
+        user_input_words = user_input_words.replace('.', '')
+        user_input_words = user_input_words.split(',')
+
+        if len(user_input_words) == 1:
+            raise ValueError('The input should contain more than one word separated by commas.') 
+        
+        list_of_words = [word.strip() for word in user_input_words]
 
     # Find and print the word sequence
     sequence_of_chain_words = find_word_chain(list_of_words, search_method)
@@ -335,7 +346,7 @@ def match_top_bottom_domino(dominos, search_method):
     elif search_method == 'DFS':
         return solve_pcp_problem_using_dfs(all_possible_paths, recursion_depth, steps)
 
-if __name__ == '__name__':
+if __name__ == '__main__':
     # Example dominoes
     dominoes = [
         ("bba", "b"),
@@ -357,7 +368,27 @@ if __name__ == '__name__':
         search_method = input("Choose BFS or DFS (Enter 'BFS' or 'DFS'): ").strip().upper()
         if search_method in ['BFS', 'DFS']:
             break
+    
+    print("Please enter dominoes separated by a single space for the top and bottom of the same domino and separated by commas for different dominoes,")
+    print("or press Enter to use the default value.")
+    print(f"Example: bba b, ba baa for ('bba', 'b'), ('ba', 'baa')")
+    user_input_words = input("Value: ").strip().upper()
+    if user_input_words:
+        user_input_words = user_input_words.replace('.', '').split(',')
+        dominoes = []
+
+        if len(user_input_words) <= 1:
+            raise ValueError('The input should contain more than one word separated by commas.') 
         
+        for inner_list in user_input_words:
+            inner_list = inner_list.strip().split(' ')
+
+            if len(inner_list) != 2:
+                raise ValueError('Each individual domino should have a length of 2.') 
+            
+            domino = [ele.strip() for ele in inner_list]
+            dominoes.append(domino)
+
     # Find a solution for the PCP problem
     solution = match_top_bottom_domino(dominoes, search_method)
 
