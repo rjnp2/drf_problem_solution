@@ -120,9 +120,6 @@ if __name__ == '__main__':
         user_input_words = user_input_words.replace('.', '').split(',')
         dominoes = []
 
-        if len(user_input_words) <= 1:
-            raise ValueError('The input should contain more than one word separated by commas.') 
-        
         for inner_list in user_input_words:
             inner_list = inner_list.strip().split(' ')
 
