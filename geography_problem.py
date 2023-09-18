@@ -107,10 +107,6 @@ if __name__ == '__main__':
     if user_input_words:
         user_input_words = user_input_words.replace('.', '')
         user_input_words = user_input_words.split(',')
-
-        if len(user_input_words) == 1:
-            raise ValueError('The input should contain more than one word separated by commas.') 
-        
         list_of_words = [word.strip() for word in user_input_words]
 
     while True:
@@ -122,7 +118,6 @@ if __name__ == '__main__':
     sequence_of_chain_words = find_word_chain(list_of_words, search_method)
 
     if sequence_of_chain_words:
-        sequence_of_chain_words = ' -> '.join(sequence_of_chain_words)
         print(sequence_of_chain_words)
     else:
         print("No valid word sequence found.")
