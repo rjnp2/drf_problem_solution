@@ -109,11 +109,6 @@ if __name__ == '__main__':
     #     ('AA', 'A')
     # ]
 
-    while True:
-        search_method = input("Choose BFS or DFS (Enter 'BFS' or 'DFS'): ").strip().upper()
-        if search_method in ['BFS', 'DFS']:
-            break
-    
     print("Please enter dominoes separated by a single space for the top and bottom of the same domino and separated by commas for different dominoes,")
     print("or press Enter to use the default value.")
     print(f"Example: bba b, ba baa for ('bba', 'b'), ('ba', 'baa')")
@@ -133,6 +128,11 @@ if __name__ == '__main__':
             
             domino = [ele.strip() for ele in inner_list]
             dominoes.append(domino)
+
+    while True:
+        search_method = input("Choose BFS or DFS (Enter 'BFS' or 'DFS'): ").strip().upper()
+        if search_method in ['BFS', 'DFS']:
+            break
 
     # Find a solution for the PCP problem
     solution = match_top_bottom_domino(dominoes, search_method)

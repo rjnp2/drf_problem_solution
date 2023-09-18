@@ -94,11 +94,6 @@ if __name__ == '__main__':
     # Example list_of_words to form a word chain
     list_of_words = ["ABC", "CDE", "CFG", "EHE", "EIJ", "GHK", "GLC"]
     # list_of_words = ["apple", "lion", "nut", "elephant", "tiger", 'redpoll', 'apple']
-
-    while True:
-        search_method = input("Choose BFS or DFS (Enter 'BFS' or 'DFS'): ").strip().upper()
-        if search_method in ['BFS', 'DFS']:
-            break
     
     print("Please enter a list of words separated by commas, or press Enter to use the default value.")
     user_input_words = input("Value: ").strip().upper()
@@ -110,6 +105,11 @@ if __name__ == '__main__':
             raise ValueError('The input should contain more than one word separated by commas.') 
         
         list_of_words = [word.strip() for word in user_input_words]
+
+    while True:
+        search_method = input("Choose BFS or DFS (Enter 'BFS' or 'DFS'): ").strip().upper()
+        if search_method in ['BFS', 'DFS']:
+            break
 
     # Find and print the word sequence
     sequence_of_chain_words = find_word_chain(list_of_words, search_method)
