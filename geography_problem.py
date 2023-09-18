@@ -22,9 +22,11 @@ def find_word_chain(original_list_of_words, search_method):
             for word in match_list:
                 steps += 1
                 # Print the state (word) as it is visited
-                print("Recursion depth: {depth}, steps: {steps} and visiting {word}".format(
+                current_sequence_d = ', '.join(current_sequence)
+                print("Recursion depth: {depth}, steps: {steps}, current sequence: {current_sequence} and visiting {word}".format(
                     depth=recursion_depth,
                     steps=steps,
+                    current_sequence=current_sequence_d,
                     word=word,
                 ))
                     
@@ -53,9 +55,11 @@ def find_word_chain(original_list_of_words, search_method):
                 
                 steps += 1
                 # Print the state (word) as it is visited
-                print("Recursion depth: {depth}, steps: {steps} and visiting {word}".format(
+                current_sequence_d = ', '.join(stack)
+                print("Recursion depth: {depth}, steps: {steps}, current sequence: {current_sequence} and visiting {word}".format(
                     depth=recursion_depth,
                     steps=steps,
+                    current_sequence=current_sequence_d,
                     word=next_word,
                 ))
                 
