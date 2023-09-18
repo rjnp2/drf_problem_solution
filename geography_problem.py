@@ -5,10 +5,6 @@ def find_word_chain(original_list_of_words, search_method):
     def solve_geograpgy_problem_using_bfs(queue, recursion_depth):
         while queue:
             current_word, current_sequence = queue.popleft()
-            
-            if len(current_sequence) == len(original_list_of_words):
-                return current_sequence
-            
             recursion_depth += 1
             
             last_letter = current_word[-1]
@@ -16,7 +12,7 @@ def find_word_chain(original_list_of_words, search_method):
             
             # If there are no words starting with the last letter, return None
             if match_list is None:
-                return None
+                continue
             
             steps = 0
             for word in match_list:
@@ -29,9 +25,12 @@ def find_word_chain(original_list_of_words, search_method):
                     current_sequence=current_sequence_d,
                     word=word,
                 ))
-                    
+
                 if word not in current_sequence:
                     new_sequence = current_sequence + [word]
+                    if len(new_sequence) == len(original_list_of_words):
+                        return new_sequence
+                    
                     queue.append((word, new_sequence))
         
         return None  # No valid sequence found
@@ -50,18 +49,19 @@ def find_word_chain(original_list_of_words, search_method):
         recursion_depth += 1
         steps = 0
         for next_word in match_list:
+
+            steps += 1
+            # Print the state (word) as it is visited
+            current_sequence_d = ', '.join(stack)
+            print("Recursion depth: {depth}, steps: {steps}, current sequence: {current_sequence} and visiting {word}".format(
+                depth=recursion_depth,
+                steps=steps,
+                current_sequence=current_sequence_d,
+                word=next_word,
+            ))
+            
             if next_word not in stack:
                 stack.append(next_word)
-                
-                steps += 1
-                # Print the state (word) as it is visited
-                current_sequence_d = ', '.join(stack)
-                print("Recursion depth: {depth}, steps: {steps}, current sequence: {current_sequence} and visiting {word}".format(
-                    depth=recursion_depth,
-                    steps=steps,
-                    current_sequence=current_sequence_d,
-                    word=next_word,
-                ))
                 
                 # Recursively search for the next word in the chain
                 result = solve_geograpgy_problem_using_dfs(next_word, stack, recursion_depth)
