@@ -70,6 +70,10 @@ def match_top_bottom_domino(dominos, search_method):
         return solve_pcp_problem_using_dfs(new_possible_paths, recursion_depth)
     
     if len(dominos) == 1:
+        top_domino = "".join([d[0] for d in dominos])
+        bottom_domino = "".join([d[1] for d in dominos])
+        if top_domino == bottom_domino:
+            return [top_domino, bottom_domino]
         return None 
     
     recursion_depth = 0
@@ -105,7 +109,7 @@ if __name__ == '__main__':
     # ]
 
     # dominoes = [
-    #     ('AA', 'A')
+    #     ('A', 'A')
     # ]
 
     print("Please enter dominoes separated by a single space for the top and bottom of the same domino and separated by commas for different dominoes,")
