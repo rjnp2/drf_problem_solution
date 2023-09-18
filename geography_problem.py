@@ -99,6 +99,7 @@ def find_word_chain(original_list_of_words, search_method):
 if __name__ == '__main__':
     # Example list_of_words to form a word chain
     list_of_words = ["ABC", "CDE", "CFG", "EHE", "EIJ", "GHK", "GLC"]
+    # list_of_words = ['ABC', 'CDE', 'CFG', 'EHI', 'GJC', 'GKG']
     # list_of_words = ["apple", "lion", "nut", "elephant", "tiger", 'redpoll', 'apple']
     
     print("Please enter a list of words separated by commas, or press Enter to use the default value.")
