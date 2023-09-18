@@ -26,6 +26,7 @@ def find_word_chain(original_list_of_words, search_method):
                     word=word,
                 ))
 
+                # uses current_sequence as used_word/visited_word as word can exist once.
                 if word not in current_sequence:
                     new_sequence = current_sequence + [word]
                     if len(new_sequence) == len(original_list_of_words):
@@ -59,7 +60,8 @@ def find_word_chain(original_list_of_words, search_method):
                 current_sequence=current_sequence_d,
                 word=next_word,
             ))
-            
+
+            # used stack as used_word/visited_word as word can exist once.            
             if next_word not in stack:
                 stack.append(next_word)
                 
