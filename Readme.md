@@ -30,13 +30,9 @@ from collections import deque
 
 def find_word_chain(original_list_of_words, search_method):
     
-    def solve_geograpgy_problem_using_bfs(queue, recursion_depth, steps):
+    def solve_geograpgy_problem_using_bfs(queue, recursion_depth):
         while queue:
             current_word, current_sequence = queue.popleft()
-            
-            if len(current_sequence) == len(original_list_of_words):
-                return current_sequence
-            
             recursion_depth += 1
             
             last_letter = current_word[-1]
@@ -44,25 +40,32 @@ def find_word_chain(original_list_of_words, search_method):
             
             # If there are no words starting with the last letter, return None
             if match_list is None:
-                return None
+                continue
             
+            steps = 0
             for word in match_list:
                 steps += 1
                 # Print the state (word) as it is visited
-                print("Recursion depth: {depth}, steps: {steps} and visiting {word}".format(
+                current_sequence_d = ', '.join(current_sequence)
+                print("Recursion depth: {depth}, steps: {steps}, current sequence: {current_sequence} and visiting {word}".format(
                     depth=recursion_depth,
                     steps=steps,
+                    current_sequence=current_sequence_d,
                     word=word,
                 ))
-                    
+
+                # uses current_sequence as used_word/visited_word as word can exist once.
                 if word not in current_sequence:
                     new_sequence = current_sequence + [word]
+                    if len(new_sequence) == len(original_list_of_words):
+                        return new_sequence
+                    
                     queue.append((word, new_sequence))
         
         return None  # No valid sequence found
 
     # Depth-first search function to find a word chain
-    def solve_geograpgy_problem_using_dfs(word, stack, recursion_depth, steps):
+    def solve_geograpgy_problem_using_dfs(word, stack, recursion_depth):
         if len(stack) == len(original_list_of_words):
             return stack
 
@@ -73,21 +76,25 @@ def find_word_chain(original_list_of_words, search_method):
             return None
         
         recursion_depth += 1
-        
+        steps = 0
         for next_word in match_list:
+
+            steps += 1
+            # Print the state (word) as it is visited
+            current_sequence_d = ', '.join(stack)
+            print("Recursion depth: {depth}, steps: {steps}, current sequence: {current_sequence} and visiting {word}".format(
+                depth=recursion_depth,
+                steps=steps,
+                current_sequence=current_sequence_d,
+                word=next_word,
+            ))
+
+            # used stack as used_word/visited_word as word can exist once.            
             if next_word not in stack:
                 stack.append(next_word)
                 
-                steps += 1
-                # Print the state (word) as it is visited
-                print("Recursion depth: {depth}, steps: {steps} and visiting {word}".format(
-                    depth=recursion_depth,
-                    steps=steps,
-                    word=next_word,
-                ))
-                
                 # Recursively search for the next word in the chain
-                result = solve_geograpgy_problem_using_dfs(next_word, stack, recursion_depth, steps)
+                result = solve_geograpgy_problem_using_dfs(next_word, stack, recursion_depth)
                 if result:
                     return result
                 
@@ -108,25 +115,19 @@ def find_word_chain(original_list_of_words, search_method):
         graph_of_first_letter[word[0]].append(word)
         
     recursion_depth = 0
-    steps = 0
     
     if search_method == 'BFS':
         queue = deque([(initial_word, [initial_word,])])
-        return solve_geograpgy_problem_using_bfs(queue, recursion_depth, steps)
+        return solve_geograpgy_problem_using_bfs(queue, recursion_depth)
         
     elif search_method == 'DFS':
         stack = [initial_word,]
-        return solve_geograpgy_problem_using_dfs(initial_word, stack, recursion_depth, steps)
+        return solve_geograpgy_problem_using_dfs(initial_word, stack, recursion_depth)
 
 if __name__ == '__main__':
     # Example list_of_words to form a word chain
     list_of_words = ["ABC", "CDE", "CFG", "EHE", "EIJ", "GHK", "GLC"]
     # list_of_words = ["apple", "lion", "nut", "elephant", "tiger", 'redpoll', 'apple']
-
-    while True:
-        search_method = input("Choose BFS or DFS (Enter 'BFS' or 'DFS'): ").strip().upper()
-        if search_method in ['BFS', 'DFS']:
-            break
     
     print("Please enter a list of words separated by commas, or press Enter to use the default value.")
     user_input_words = input("Value: ").strip().upper()
@@ -138,6 +139,11 @@ if __name__ == '__main__':
             raise ValueError('The input should contain more than one word separated by commas.') 
         
         list_of_words = [word.strip() for word in user_input_words]
+
+    while True:
+        search_method = input("Choose BFS or DFS (Enter 'BFS' or 'DFS'): ").strip().upper()
+        if search_method in ['BFS', 'DFS']:
+            break
 
     # Find and print the word sequence
     sequence_of_chain_words = find_word_chain(list_of_words, search_method)
@@ -179,6 +185,8 @@ Output from the Program:
 ```python
 list_of_words = ["apple", "lion", "nut", "elephant", "tiger", 'redpoll']
 
+Please enter a list of words separated by commas, or press Enter to use the default value.
+Value: 
 Choose BFS or DFS (Enter 'BFS' or 'DFS'): bfs
 Recursion depth: 1, steps: 1 and visiting elephant
 Recursion depth: 2, steps: 2 and visiting tiger
@@ -199,6 +207,8 @@ apple -> elephant -> tiger -> redpoll -> lion -> nut
 ```python
 list_of_words = ["ABC", "CDE", "CFG", "EHE", "EIJ", "GHK", "GLC"]
 
+Please enter a list of words separated by commas, or press Enter to use the default value.
+Value: 
 Choose BFS or DFS (Enter 'BFS' or 'DFS'): bfs
 Recursion depth: 1, steps: 1 and visiting CDE
 Recursion depth: 1, steps: 2 and visiting CFG
@@ -257,12 +267,12 @@ from collections import deque
 
 def match_top_bottom_domino(dominos, search_method):
     
-    def solve_pcp_problem_using_bfs(queue, recursion_depth, steps):
-        # print(queue)
+    def solve_pcp_problem_using_bfs(queue, recursion_depth):
         while queue:
             current_path = queue.popleft()
             recursion_depth += 1
             
+            steps = 0
             for path in current_path:
                 for domino in dominos:
                     steps += 1
@@ -288,20 +298,20 @@ def match_top_bottom_domino(dominos, search_method):
                     if top_domino[:min_len] == bottom_domino[:min_len]:
                         queue.append([new_path,])
         
-    def solve_pcp_problem_using_dfs(all_possible_paths, recursion_depth, steps):
+    def solve_pcp_problem_using_dfs(all_possible_paths, recursion_depth):
         # Base case: If there are no more paths to explore, return None
         if not all_possible_paths:
             return None
         
         new_possible_paths = []
         recursion_depth += 1
+        steps = 0
         for path in all_possible_paths:
             for domino in dominos:
                 new_path = path.copy()
                 new_path.append(domino)
                 
                 steps += 1
-                
                 print("Recursion depth: {depth}, steps: {steps} and visting: {paths}".format(
                     depth=recursion_depth,
                     paths=domino,
@@ -322,14 +332,13 @@ def match_top_bottom_domino(dominos, search_method):
                     new_possible_paths.append(new_path)
         
         # Continue the search with new_possible_paths
-        return solve_pcp_problem_using_dfs(new_possible_paths, recursion_depth, steps)
+        return solve_pcp_problem_using_dfs(new_possible_paths, recursion_depth)
     
     if len(dominos) == 1:
         return None 
     
     recursion_depth = 0
-    steps = 0
-    
+
     # Initialize all_possible_paths with dominoes having an initial partial match
     all_possible_paths = []
     for domino in dominos:
@@ -341,10 +350,10 @@ def match_top_bottom_domino(dominos, search_method):
     
     if search_method == 'BFS':
         queue = deque([all_possible_paths, ])
-        return solve_pcp_problem_using_bfs(queue, recursion_depth, steps)
+        return solve_pcp_problem_using_bfs(queue, recursion_depth)
         
     elif search_method == 'DFS':
-        return solve_pcp_problem_using_dfs(all_possible_paths, recursion_depth, steps)
+        return solve_pcp_problem_using_dfs(all_possible_paths, recursion_depth)
 
 if __name__ == '__main__':
     # Example dominoes
@@ -364,11 +373,6 @@ if __name__ == '__main__':
     #     ('AA', 'A')
     # ]
 
-    while True:
-        search_method = input("Choose BFS or DFS (Enter 'BFS' or 'DFS'): ").strip().upper()
-        if search_method in ['BFS', 'DFS']:
-            break
-    
     print("Please enter dominoes separated by a single space for the top and bottom of the same domino and separated by commas for different dominoes,")
     print("or press Enter to use the default value.")
     print(f"Example: bba b, ba baa for ('bba', 'b'), ('ba', 'baa')")
@@ -388,6 +392,11 @@ if __name__ == '__main__':
             
             domino = [ele.strip() for ele in inner_list]
             dominoes.append(domino)
+
+    while True:
+        search_method = input("Choose BFS or DFS (Enter 'BFS' or 'DFS'): ").strip().upper()
+        if search_method in ['BFS', 'DFS']:
+            break
 
     # Find a solution for the PCP problem
     solution = match_top_bottom_domino(dominoes, search_method)
@@ -438,6 +447,10 @@ dominoes = [
     ("ab", "bba"),
 ]
 
+Please enter dominoes separated by a single space for the top and bottom of the same domino and separated by commas for different dominoes,
+or press Enter to use the default value.
+Example: bba b, ba baa for ('bba', 'b'), ('ba', 'baa')
+Value: 
 Choose BFS or DFS (Enter 'BFS' or 'DFS'): bfs
 Recursion depth: 69355, steps: 277421 and visting: ('bba', 'b')
 Recursion depth: 69355, steps: 277422 and visting: ('ba', 'baa')
@@ -460,6 +473,10 @@ Recursion depth: 69359, steps: 277438 and visting: ('ba', 'baa')
 Recursion depth: 69359, steps: 277439 and visting: ('ba', 'aba')
 Match found: baabbaababbabbabaabbaabbaababbaababbabbaababbabbabaabbbabbabaabababbabbababbabbabbabaabbaabbbababbaababbabbaabbbabbabaabbbabbababbabbababbababbaabbbabbaba domino top is equal to baabbaababbabbabaabbaabbaababbaababbabbaababbabbabaabbbabbabaabababbabbababbabbabbabaabbaabbbababbaababbabbaabbbabbabaabbbabbababbabbababbababbaabbbabbaba domino bottom with a size of 154 each.
 
+Please enter dominoes separated by a single space for the top and bottom of the same domino and separated by commas for different dominoes,
+or press Enter to use the default value.
+Example: bba b, ba baa for ('bba', 'b'), ('ba', 'baa')
+Value: 
 Choose BFS or DFS (Enter 'BFS' or 'DFS'): dfs
 Recursion depth: 65, steps: 277420 and visting: ('ab', 'bba')
 Recursion depth: 65, steps: 277421 and visting: ('bba', 'b')
