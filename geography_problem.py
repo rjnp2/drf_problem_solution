@@ -2,7 +2,7 @@ from collections import deque
 
 def find_word_chain(original_list_of_words, search_method):
     
-    def solve_geograpgy_problem_using_bfs(queue, recursion_depth, steps):
+    def solve_geograpgy_problem_using_bfs(queue, recursion_depth):
         while queue:
             current_word, current_sequence = queue.popleft()
             
@@ -18,6 +18,7 @@ def find_word_chain(original_list_of_words, search_method):
             if match_list is None:
                 return None
             
+            steps = 0
             for word in match_list:
                 steps += 1
                 # Print the state (word) as it is visited
@@ -34,7 +35,7 @@ def find_word_chain(original_list_of_words, search_method):
         return None  # No valid sequence found
 
     # Depth-first search function to find a word chain
-    def solve_geograpgy_problem_using_dfs(word, stack, recursion_depth, steps):
+    def solve_geograpgy_problem_using_dfs(word, stack, recursion_depth):
         if len(stack) == len(original_list_of_words):
             return stack
 
@@ -45,7 +46,7 @@ def find_word_chain(original_list_of_words, search_method):
             return None
         
         recursion_depth += 1
-        
+        steps = 0
         for next_word in match_list:
             if next_word not in stack:
                 stack.append(next_word)
@@ -59,7 +60,7 @@ def find_word_chain(original_list_of_words, search_method):
                 ))
                 
                 # Recursively search for the next word in the chain
-                result = solve_geograpgy_problem_using_dfs(next_word, stack, recursion_depth, steps)
+                result = solve_geograpgy_problem_using_dfs(next_word, stack, recursion_depth)
                 if result:
                     return result
                 
@@ -80,15 +81,14 @@ def find_word_chain(original_list_of_words, search_method):
         graph_of_first_letter[word[0]].append(word)
         
     recursion_depth = 0
-    steps = 0
     
     if search_method == 'BFS':
         queue = deque([(initial_word, [initial_word,])])
-        return solve_geograpgy_problem_using_bfs(queue, recursion_depth, steps)
+        return solve_geograpgy_problem_using_bfs(queue, recursion_depth)
         
     elif search_method == 'DFS':
         stack = [initial_word,]
-        return solve_geograpgy_problem_using_dfs(initial_word, stack, recursion_depth, steps)
+        return solve_geograpgy_problem_using_dfs(initial_word, stack, recursion_depth)
 
 if __name__ == '__main__':
     # Example list_of_words to form a word chain

@@ -2,12 +2,12 @@ from collections import deque
 
 def match_top_bottom_domino(dominos, search_method):
     
-    def solve_pcp_problem_using_bfs(queue, recursion_depth, steps):
-        # print(queue)
+    def solve_pcp_problem_using_bfs(queue, recursion_depth):
         while queue:
             current_path = queue.popleft()
             recursion_depth += 1
             
+            steps = 0
             for path in current_path:
                 for domino in dominos:
                     steps += 1
@@ -33,20 +33,20 @@ def match_top_bottom_domino(dominos, search_method):
                     if top_domino[:min_len] == bottom_domino[:min_len]:
                         queue.append([new_path,])
         
-    def solve_pcp_problem_using_dfs(all_possible_paths, recursion_depth, steps):
+    def solve_pcp_problem_using_dfs(all_possible_paths, recursion_depth):
         # Base case: If there are no more paths to explore, return None
         if not all_possible_paths:
             return None
         
         new_possible_paths = []
         recursion_depth += 1
+        steps = 0
         for path in all_possible_paths:
             for domino in dominos:
                 new_path = path.copy()
                 new_path.append(domino)
                 
                 steps += 1
-                
                 print("Recursion depth: {depth}, steps: {steps} and visting: {paths}".format(
                     depth=recursion_depth,
                     paths=domino,
@@ -67,14 +67,13 @@ def match_top_bottom_domino(dominos, search_method):
                     new_possible_paths.append(new_path)
         
         # Continue the search with new_possible_paths
-        return solve_pcp_problem_using_dfs(new_possible_paths, recursion_depth, steps)
+        return solve_pcp_problem_using_dfs(new_possible_paths, recursion_depth)
     
     if len(dominos) == 1:
         return None 
     
     recursion_depth = 0
-    steps = 0
-    
+
     # Initialize all_possible_paths with dominoes having an initial partial match
     all_possible_paths = []
     for domino in dominos:
@@ -86,10 +85,10 @@ def match_top_bottom_domino(dominos, search_method):
     
     if search_method == 'BFS':
         queue = deque([all_possible_paths, ])
-        return solve_pcp_problem_using_bfs(queue, recursion_depth, steps)
+        return solve_pcp_problem_using_bfs(queue, recursion_depth)
         
     elif search_method == 'DFS':
-        return solve_pcp_problem_using_dfs(all_possible_paths, recursion_depth, steps)
+        return solve_pcp_problem_using_dfs(all_possible_paths, recursion_depth)
 
 if __name__ == '__main__':
     # Example dominoes
